@@ -1,12 +1,12 @@
 class UniqueSubstringFinder
   
   DEFAULT_OPTIONS = {
-    :ignore_case => true,
-    :ignore_non_ascii => true
+    :ignore_case => false,
+    :ignore_non_word_chars => false
   }
   
-  attr_accessor :ignore_case, :ignore_non_ascii
-  attr_reader :dictionary
+  attr_accessor :dictionary
+  attr_accessor :ignore_case, :ignore_non_word_chars
   
   def initialize( options={} )
     options = DEFAULT_OPTIONS.merge( options )
@@ -16,30 +16,38 @@ class UniqueSubstringFinder
     @dictionary = []
   end
   
-  def load(filepath)
-    @dictionary = File.read( filepath )
-  end
-  
-  # Finds unique substrings of length +size+. Returns a 2d array with substrings
-  # on left and unique words on right.
+  # Finds unique substrings of length +size+. Returns a Hash with the unique
+  # substrings as keys and the unique wording containing the substring as the
+  # value.
   #
   def find_unique_by_size(size)
-    matches = Hash.new{ |hash, key| hash[key] = [] }
+    matches = {}
+    
+    @dictionary.rewind if @dictionary.respond_to?(:rewind)
     
     @dictionary.each do |w|
+      target_word = w.chomp
       word = w.chomp
+      word.gsub!( /\W/, '' ) if ignore_non_word_chars
       
       next if word.length < size
       
       index = 0
       while (substring = word[index,size]) && substring.length == size
-        matches[substring] << word
+        substring.downcase! if ignore_case
+          
+        if matches.key? substring
+          # There's already a word. We'll set it to nil and filter out nils later.
+          matches[substring] = nil
+        else
+          matches[substring] = target_word
+        end
         index += 1
       end 
       
     end
     
-    matches.select{ |k,v| v.length == 1 }.to_a.sort_by{ |m| m[0] }
+    matches.delete_if{ |k,v| v.nil? }
   end
   
 end

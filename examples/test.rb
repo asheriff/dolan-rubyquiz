@@ -1,18 +1,10 @@
 require File.expand_path('../../lib/unique_substring_finder', __FILE__)
 
-dict = File.expand_path('../../spec/data/words_short', __FILE__)
+dictionary_path = File.expand_path('../../spec/data/words', __FILE__)
 
 finder = UniqueSubstringFinder.new
-finder.load( dict )
+finder.dictionary = File.new(dictionary_path)
 
-finder.find_unique_by_size(4).each do |m|
-  puts "#{m[0]} #{m[1]}"
-end
-
-puts
-puts '#'*80
-puts
-
-finder.find_unique_by_size(6).each do |m|
-  puts "#{m[0]} #{m[1]}"
+finder.find_unique_by_size(4).sort.each do |w|
+  puts "#{w[0]} #{w[1]}"
 end
