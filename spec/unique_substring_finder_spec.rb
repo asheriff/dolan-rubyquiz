@@ -110,4 +110,18 @@ describe UniqueSubstringFinder do
       }
     end
   end
+  
+  it "should pass dolan test" do
+    @finder = UniqueSubstringFinder.new
+    @finder.dictionary = %w( arrows carrots give me )
+    
+    @finder.find_unique_by_size(4).should == {
+      "carr" => "carrots",
+      "give" => "give",
+      "rots" => "carrots",
+      "rows" => "arrows",
+      "rrot" => "carrots",
+      "rrow" => "arrows",
+    }
+  end
 end
