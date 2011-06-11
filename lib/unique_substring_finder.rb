@@ -1,5 +1,7 @@
 class UniqueSubstringFinder
   
+  DEFAULT_SIZE = 4
+  
   DEFAULT_OPTIONS = {
     :ignore_case => false,
     :ignore_non_word_chars => false
@@ -20,7 +22,7 @@ class UniqueSubstringFinder
   # substrings as keys and the unique wording containing the substring as the
   # value.
   #
-  def find_unique_by_size(size)
+  def find_unique_by_size(size=DEFAULT_SIZE)
     matches = {}
     
     @dictionary.rewind if @dictionary.respond_to?(:rewind)

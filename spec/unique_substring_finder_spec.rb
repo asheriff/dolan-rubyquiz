@@ -26,6 +26,15 @@ describe UniqueSubstringFinder do
       @finder = UniqueSubstringFinder.new
     end
     
+    it "have a default size of 4" do
+      @finder.dictionary = %w( zoo zoom broom room zed )
+      
+      @finder.find_unique_by_size.should == {
+        "zoom" => "zoom",
+        "broo" => "broom",
+      }
+    end
+    
     it "should only find unique substrings" do
       @finder.dictionary = %w( zoo zoom broom room zed )
       
