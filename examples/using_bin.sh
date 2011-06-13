@@ -21,3 +21,8 @@
 ./bin/unique_substring_finder spec/data/dolan_words |
   sort |
   awk '{ print $1 > "spec/output/questions"; print $2 > "spec/output/answers" }'
+
+#
+# Using executable to write words and substrings to separate files
+#
+./bin/unique_substring_finder -a examples/output/questions -b examples/output/answers spec/data/dolan_words
