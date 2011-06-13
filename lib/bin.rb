@@ -6,7 +6,15 @@ class UniqueSubstringFinder
     def self.run(args)
       options, output_options = *parse_opts(args)
       
-      find( ARGV[0], options, output_options )
+      substing_file = output_options.delete(:substing_file)
+      words_file = output_options.delete(:words_file)
+      
+      # IMPROVE: Dry this up so a single method works with any IO object.
+      if( substing_file && words_file )
+        write_to_files( ARGV[0], options, output_options, substing_file, words_file )
+      else
+        write_to_stdout( ARGV[0], options, output_options )
+      end
     end
     
     def self.parse_opts(args)
@@ -49,6 +57,13 @@ END_BANNER
           output_options[:field_separator] = s
         end
         
+        parser.on("-a", "--substrings-file FILE", "Write substrings to FILE" ) do |filename|
+          output_options[:substing_file] = filename
+        end
+        
+        parser.on("-b", "--words-file FILE", "Write words to FILE" ) do |filename|
+          output_options[:words_file] = filename
+        end
       end
       
       opts.parse!
@@ -61,7 +76,7 @@ END_BANNER
       [options, output_options]
     end
   
-    def self.find(dictionary, options={}, output_options={})
+    def self.write_to_stdout(dictionary, options={}, output_options={})
       size = options.delete(:size)
       
       finder = UniqueSubstringFinder.new(options)
@@ -71,6 +86,24 @@ END_BANNER
         puts "%s%s%s" % [k, output_options[:field_separator], v]
       end
     end
-  
+    
+    def self.write_to_files(dictionary, options, output_options, substring_file_path, words_file_path)
+      size = options.delete(:size)
+      
+      finder = UniqueSubstringFinder.new(options)
+      finder.dictionary = File.new(dictionary)
+      
+      # TODO: This will clobber existing files. Prolly should exit if file exists
+      # unless user specifies a --force flag.
+      
+      File.open(substring_file_path, "w") do |substing_file|
+        File.open(words_file_path, "w") do |words_file|
+          finder.find_unique_by_size(size).each do |k,v|
+            substing_file.puts k
+            words_file.puts  v
+          end
+        end
+      end
+    end
   end
 end

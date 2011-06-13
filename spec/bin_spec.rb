@@ -54,4 +54,42 @@ describe 'bin/unique_substring_finder executable command' do
       rrow arrows
     ).unindent
   end
+  
+  describe "writing to files" do
+    before :each do
+      @substrings = "./spec/output/substrings"
+      @words      = "./spec/output/words"
+      
+      `rm -f #{@substrings} #{@words}`
+      
+      @cmd = "#{BINPATH} spec/data/dolan_words --substrings-file #{@substrings} --words-file #{@words}"
+    end
+    
+    it "should write substrings file" do
+      `#{@cmd}`
+      
+      `cat #{@substrings} | sort`.strip.should == %(
+        carr
+        give
+        rots
+        rows
+        rrot
+        rrow
+      ).unindent
+    end
+    
+    
+    it "should write words file" do
+      `#{@cmd}`
+      
+      `cat #{@words} | sort`.strip.should == %(
+        arrows
+        arrows
+        carrots
+        carrots
+        carrots
+        give
+      ).unindent
+    end
+  end
 end
